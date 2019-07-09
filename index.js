@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
 
 const genres = [
   {
@@ -17,8 +16,7 @@ const genres = [
   }
 ];
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.get("/api/genres", (req, res) => {
   res.send(genres);
