@@ -1,6 +1,7 @@
 const express = require("express");
 var router = express.Router();
 const Joi = require("joi");
+Joi.objectId = require("joi-objectid")(Joi);
 const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
@@ -57,6 +58,7 @@ router.delete("/:id", async (req, res) => {
 
 function validateGenre(obj) {
   const schema = Joi.object().keys({
+    _id: Joi.objectId(),
     name: Joi.string()
       .min(3)
       .max(30)

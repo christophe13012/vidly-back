@@ -1,6 +1,7 @@
 const express = require("express");
 var router = express.Router();
 const Joi = require("joi");
+Joi.objectId = require("joi-objectid")(Joi);
 const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
@@ -16,54 +17,54 @@ router.get("/", async (req, res) => {
   res.send(customers);
 });
 
-/*
 router.get("/:id", async (req, res) => {
-  const genre = await Genre.findById(req.params.id);
-  if (!genre) return res.status(404).send("Ce genre n'existe pas");
-  res.send(genre);
+  const customer = await Customer.findById(req.params.id);
+  if (!customer) return res.status(404).send("Cet utilisateur n'existe pas");
+  res.send(customer);
 });
 
 router.post("/", async (req, res) => {
-  const { error } = validateGenre(req.body);
+  const { error } = validateCustomers(req.body);
   if (error) return res.status(400).send(error.details[0].message);
-  let genre = await Genre.findOne({ name: req.body.name });
-  if (genre) return res.status(400).send("Ce genre existe deja");
-  genre = new Genre();
-  genre.name = req.body.name;
-  await genre.save();
-  res.send(genre);
+  let customer = await Genre.findOne({ name: req.body.name });
+  if (customer) return res.status(400).send("Ce nom existe déjà");
+  customer = new Genre();
+  customer.name = req.body.name;
+  customer.isGold = req.body.isGold;
+  customer.phone = req.body.phone;
+  await customer.save();
+  res.send(customer);
 });
 
 router.put("/:id", async (req, res) => {
-  const { error } = validateGenre(req.body);
+  const { error } = validateCustomers(req.body);
   if (error) return res.status(400).send(error.details[0].message);
-  let genre = await Genre.findOne({ name: req.body.name });
-  if (genre)
-    return res
-      .status(400)
-      .send("Le genre n'est pas modifié ou existe déjà dans notre bd");
-
-  genre = await Genre.findByIdAndUpdate(
+  const customer = await Customer.findByIdAndUpdate(
     req.params.id,
-    { name: req.body.name },
+    { isGold: req.body.isGold, name: req.body.name, phone: req.body.phone },
     { new: true }
   );
-  if (!genre) return res.status(404).send("Ce genre n'existe pas");
-  res.send(genre);
+  if (!customer) return res.status(404).send("Cet utilisateur n'existe pas");
+  res.send(customer);
 });
 
 router.delete("/:id", async (req, res) => {
-  const genre = await Genre.findByIdAndDelete(req.params.id);
-  if (!genre) return res.status(404).send("Ce genre n'existe pas");
-  res.send(genre);
+  const customer = await Customer.findByIdAndDelete(req.params.id);
+  if (!customer) return res.status(404).send("Cet utilisateur n'existe pas");
+  res.send(customer);
 });
-*/
 
 function validateCustomers(obj) {
   const schema = Joi.object().keys({
+    _id: Joi.objectId(),
+    isGold: Joi.boolean().required(),
     name: Joi.string()
-      .min(3)
-      .max(30)
+      .min(5)
+      .max(50)
+      .required(),
+    phone: Joi.string()
+      .min(5)
+      .max(255)
       .required()
   });
 
