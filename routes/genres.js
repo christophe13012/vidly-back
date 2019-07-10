@@ -69,4 +69,6 @@ function validateGenre(obj) {
   return result;
 }
 
-module.exports = router;
+module.exports.genres = router;
+module.exports.Genre = Genre;
+module.exports.genreSchema = genreSchema;
