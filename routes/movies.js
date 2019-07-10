@@ -21,6 +21,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   const movie = await Movie.findById(req.params.id);
+  if (!movie) return res.status(404).send("Ce film n'existe pas");
   res.send(movie);
 });
 
@@ -91,4 +92,5 @@ function validateMovie(obj) {
   return result;
 }
 
-module.exports = router;
+module.exports.movies = router;
+module.exports.Movie = Movie;

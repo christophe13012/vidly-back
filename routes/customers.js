@@ -72,4 +72,5 @@ function validateCustomers(obj) {
   return result;
 }
 
-module.exports = router;
+module.exports.customers = router;
+module.exports.Customer = Customer;
