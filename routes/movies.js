@@ -20,6 +20,8 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id))
+    return res.status(404).send("Ce film n'existe pas");
   const movie = await Movie.findById(req.params.id);
   if (!movie) return res.status(404).send("Ce film n'existe pas");
   res.send(movie);
@@ -30,7 +32,7 @@ router.post("/", async (req, res) => {
   if (error) return res.status(400).send(error.details[0].message);
 
   const genre = await Genre.findById(req.body.genreId);
-  if (!genre) return res.status(404).send("Ce genre n'existe pas");
+  if (!genre) return res.status(400).send("Ce genre n'existe pas");
 
   let movie = new Movie();
   movie.title = req.body.title;
@@ -42,7 +44,9 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
-  const { error } = validateMovie(req.body);
+  const bodyNoId = { ...req.body };
+  delete bodyNoId._id;
+  const { error } = validateMovie(bodyNoId);
   if (error) return res.status(400).send(error.details[0].message);
 
   const genre = await Genre.findById(req.body.genreId);
@@ -67,7 +71,7 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   const movie = await Movie.findByIdAndDelete(req.params.id);
-  if (!movie) return res.status(400).send("Ce film n'existe pas");
+  if (!movie) return res.status(404).send("Ce film n'existe pas");
   res.send(movie);
 });
 
