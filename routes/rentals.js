@@ -4,27 +4,13 @@ const Joi = require("joi");
 Joi.objectId = require("joi-objectid")(Joi);
 const mongoose = require("mongoose");
 const { Movie } = require("./movies");
-const { Customer } = require("./customers");
+const { User } = require("./users");
 
 const rentalSchema = new mongoose.Schema({
-  customer: {
+  user: {
     type: new mongoose.Schema({
-      name: {
-        type: String,
-        required: true,
-        minlength: 5,
-        maxlength: 50
-      },
-      isGold: {
-        type: Boolean,
-        default: false
-      },
-      phone: {
-        type: String,
-        required: true,
-        minlength: 5,
-        maxlength: 50
-      }
+      email: { type: String, required: true, minlength: 3, maxlength: 50 },
+      name: { type: String, required: true, minlength: 3, maxlength: 30 }
     }),
     required: true
   },
@@ -69,20 +55,21 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   const rental = await Rental.findById(req.params.id);
-  if (!rental) return res.status(400).send("Cette location l'existe pas");
+  if (!rental) return res.status(400).send("Cette location n'existe pas");
   res.send(rental);
 });
 
 router.post("/", async (req, res) => {
   const { error } = validateRental(req.body);
   if (error) return res.status(404).send(error.details[0].message);
-
-  const customer = await Customer.findById(req.body.customerId);
-  if (!customer) return res.status(404).send("Cet utilisateur n'existe pas");
+  const user = await User.findById(req.body.userId);
+  if (!user) return res.status(404).send("Cet utilisateur n'existe pas");
   const movie = await Movie.findById(req.body.movieId);
   if (!movie) return res.status(404).send("Ce film n'existe pas");
+  movie.numberInStock = movie.numberInStock - 1;
+  await movie.save();
   const rental = new Rental();
-  rental.customer = customer;
+  rental.user = user;
   rental.movie = movie;
   await rental.save();
   res.send(rental);
@@ -90,7 +77,7 @@ router.post("/", async (req, res) => {
 
 function validateRental(rental) {
   const schema = {
-    customerId: Joi.objectId().required(),
+    userId: Joi.objectId().required(),
     movieId: Joi.objectId().required()
   };
 

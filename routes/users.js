@@ -38,10 +38,27 @@ router.post("/", async (req, res) => {
     },
     "vidly_jwtPrivateKey"
   );
-  user = user.toObject();
-  delete user.password;
-  delete user.__v;
-  res.header("x-auth-token", token).send(user);
+  res.send(token);
+});
+
+router.post("/auth", async (req, res) => {
+  let user = await User.findOne({ email: req.body.email });
+  if (!user) return res.status(400).send("Cet utilisateur n'existe pas");
+
+  const passwordOk = await bcrypt.compare(req.body.password, user.password);
+  if (!passwordOk)
+    return res.status(400).send("Nom d'utilisateur ou mot de passe incorrect");
+
+  const token = jwt.sign(
+    {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      password: user.password
+    },
+    "vidly_jwtPrivateKey"
+  );
+  res.send(token);
 });
 
 function validateUser(obj) {
