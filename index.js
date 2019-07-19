@@ -8,9 +8,12 @@ const { users } = require("./routes/users");
 const { movies } = require("./routes/movies");
 const rentals = require("./routes/rentals");
 
-mongoose.connect("mongodb://localhost/vidly", () => {
-  console.log("Connected to db");
-});
+mongoose.connect(
+  "mongodb+srv://chris:<test>@vidly-qu0jp.gcp.mongodb.net/test?retryWrites=true&w=majority",
+  () => {
+    console.log("Connected to db");
+  }
+);
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
