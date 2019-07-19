@@ -10,7 +10,8 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
   email: { type: String, required: true, minlength: 3, maxlength: 50 },
   password: { type: String, required: true, minlength: 3, maxlength: 100 },
-  name: { type: String, required: true, minlength: 3, maxlength: 30 }
+  name: { type: String, required: true, minlength: 3, maxlength: 30 },
+  isAdmin: { type: Boolean, required: true }
 });
 const User = mongoose.model("User", userSchema);
 
@@ -28,13 +29,15 @@ router.post("/", async (req, res) => {
   user.email = req.body.email;
   user.password = await bcrypt.hash(req.body.password, 10);
   user.name = req.body.name.charAt(0).toUpperCase() + req.body.name.slice(1);
+  user.isAdmin = req.body.isAdmin;
   await user.save();
   const token = jwt.sign(
     {
       _id: user._id,
       name: user.name,
       email: user.email,
-      password: user.password
+      password: user.password,
+      isAdmin: user.isAdmin
     },
     "vidly_jwtPrivateKey"
   );
@@ -54,7 +57,8 @@ router.post("/auth", async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      password: user.password
+      password: user.password,
+      isAdmin: user.isAdmin
     },
     "vidly_jwtPrivateKey"
   );
@@ -75,7 +79,8 @@ function validateUser(obj) {
     name: Joi.string()
       .min(3)
       .max(30)
-      .required()
+      .required(),
+    isAdmin: Joi.boolean().required()
   });
 
   const result = Joi.validate(obj, schema);
