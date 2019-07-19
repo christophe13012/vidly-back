@@ -9,7 +9,7 @@ const { movies } = require("./routes/movies");
 const rentals = require("./routes/rentals");
 
 mongoose.connect(
-  "mongodb+srv://christest:test@vidly-qu0jp.gcp.mongodb.net/test",
+  "mongodb+srv://christest:test@vidly-qu0jp.gcp.mongodb.net/vidly",
   () => {
     console.log("Connected to db");
   }
