@@ -27,7 +27,7 @@ router.post("/", async (req, res) => {
   user = new User();
   user.email = req.body.email;
   user.password = await bcrypt.hash(req.body.password, 10);
-  user.name = req.body.name;
+  user.name = req.body.name.charAt(0).toUpperCase() + req.body.name.slice(1);
   await user.save();
   const token = jwt.sign(
     {

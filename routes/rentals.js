@@ -5,6 +5,7 @@ Joi.objectId = require("joi-objectid")(Joi);
 const mongoose = require("mongoose");
 const { Movie } = require("./movies");
 const { User } = require("./users");
+const { genreSchema, Genre } = require("./genres");
 
 const rentalSchema = new mongoose.Schema({
   user: {
@@ -28,7 +29,8 @@ const rentalSchema = new mongoose.Schema({
         required: true,
         min: 0,
         max: 255
-      }
+      },
+      genre: { type: genreSchema, required: true }
     }),
     required: true
   },
@@ -68,11 +70,18 @@ router.post("/", async (req, res) => {
   if (!movie) return res.status(404).send("Ce film n'existe pas");
   movie.numberInStock = movie.numberInStock - 1;
   await movie.save();
+  const movieInDb = await Movie.findOneAndUpdate(
+    { _id: req.body.movieId },
+    { numberInStock: movie.numberInStock },
+    {
+      new: true
+    }
+  );
   const rental = new Rental();
   rental.user = user;
-  rental.movie = movie;
+  rental.movie = movieInDb;
   await rental.save();
-  res.send(rental);
+  res.send(movieInDb);
 });
 
 function validateRental(rental) {
