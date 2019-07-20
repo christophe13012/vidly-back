@@ -8,6 +8,8 @@ const { users } = require("./routes/users");
 const { movies } = require("./routes/movies");
 const rentals = require("./routes/rentals");
 
+const passwordDb = process.env.PASSWORD_DB;
+
 mongoose.connect(
   "mongodb+srv://christest:" +
     passwordDb +
