@@ -8,8 +8,12 @@ const { users } = require("./routes/users");
 const { movies } = require("./routes/movies");
 const rentals = require("./routes/rentals");
 
+const passwordDb = process.env.PASSWORD_DB;
+
 mongoose.connect(
-  "mongodb+srv://christest:test@vidly-qu0jp.gcp.mongodb.net/vidly",
+  "mongodb+srv://christest:" +
+    passwordDb +
+    "@vidly-qu0jp.gcp.mongodb.net/vidly",
   () => {
     console.log("Connected to db");
   }
